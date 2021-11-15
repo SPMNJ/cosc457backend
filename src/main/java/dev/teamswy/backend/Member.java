@@ -4,12 +4,19 @@ import java.time.LocalDate;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapsId;
 
 @Entity
 public class Member {
     @EmbeddedId
     private ChapterMember chapterMember;
 
+    @ManyToOne
+    @MapsId("chapterId")
+    @JoinColumn(name = "chapterId")
+    private Chapter chapter;
     private String name;
     private String email;
     private String phone;
@@ -21,8 +28,9 @@ public class Member {
     public Member() {
     }
 
-    public Member(ChapterMember chapterMember, String name, String email, String phone, String address, String status, LocalDate inductionDate, LocalDate intiationDate) {
-        this.chapterMember = chapterMember;
+    public Member(Chapter chapter, int rollNo, String name, String email, String phone, String address, String status,
+            LocalDate inductionDate, LocalDate intiationDate) {
+        this.chapter = chapter;
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -38,6 +46,14 @@ public class Member {
 
     public void setChapterMember(ChapterMember chapterMember) {
         this.chapterMember = chapterMember;
+    }
+
+    public Chapter getChapter() {
+        return chapter;
+    }
+
+    public void setChapter(Chapter chapter) {
+        this.chapter = chapter;
     }
 
     public String getName() {
@@ -98,15 +114,8 @@ public class Member {
 
     @Override
     public String toString() {
-        return "Member{" +
-                "chapterMember=" + chapterMember +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", address='" + address + '\'' +
-                ", status='" + status + '\'' +
-                ", inductionDate=" + inductionDate +
-                ", intiationDate=" + intiationDate +
-                '}';
+        return "Member [chapterMember=" + chapterMember + ", chapter=" + chapter + ", name=" + name
+                + ", email=" + email + ", phone=" + phone + ", address=" + address + ", status=" + status
+                + ", inductionDate=" + inductionDate + ", intiationDate=" + intiationDate + "]";
     }
 }
