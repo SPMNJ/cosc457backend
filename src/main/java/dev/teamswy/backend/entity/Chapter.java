@@ -1,4 +1,4 @@
-package dev.teamswy.backend;
+package dev.teamswy.backend.entity;
 
 import java.time.LocalDate;
 
@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 public class Chapter {
     
     @Id
-    private int chapterId;
+    private int chapterIdNum;
 
     private String chapterName;
     private LocalDate charterDate;
@@ -22,7 +22,7 @@ public class Chapter {
     private int chapterMembers;
 
     public Chapter(int chapterId, String chapterName, LocalDate charterDate, String chapterStatus, FraternityHQ chapterHQ, int chapterMembers) {
-        this.chapterId = chapterId;
+        this.chapterIdNum = chapterId;
         this.chapterName = chapterName;
         this.charterDate = charterDate;
         this.chapterStatus = chapterStatus;
@@ -34,11 +34,11 @@ public class Chapter {
     }
 
     public int getChapterId() {
-        return chapterId;
+        return chapterIdNum;
     }
 
     public void setChapterId(int chapterId) {
-        this.chapterId = chapterId;
+        this.chapterIdNum = chapterId;
     }
 
     public String getChapterName() {
@@ -83,7 +83,7 @@ public class Chapter {
 
     @Override
     public String toString() {
-        return "Chapter [chapterId=" + chapterId + ", chapterName=" + chapterName + ", charterDate=" + charterDate
+        return "Chapter [chapterId=" + chapterIdNum + ", chapterName=" + chapterName + ", charterDate=" + charterDate
                 + ", chapterStatus=" + chapterStatus + ", chapterHQ=" + chapterHQ + ", chapterMembers=" + chapterMembers
                 + "]";
     }

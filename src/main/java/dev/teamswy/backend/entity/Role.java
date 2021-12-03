@@ -1,17 +1,15 @@
-package dev.teamswy.backend;
+package dev.teamswy.backend.entity;
 
 import java.time.LocalDate;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 
 @Entity
-public class Position {
+public class Role {
 
     @Id
     private int rank;
@@ -20,15 +18,15 @@ public class Position {
 
     @OneToOne
     @JoinColumns({
-        @JoinColumn(name = "chapterID"),
+        @JoinColumn(name = "chapterId"),
         @JoinColumn(name = "rollNo")})
     private Member member;
     private LocalDate startDate;
 
-    public Position() {
+    public Role() {
     }
 
-    public Position(int rank, String title, boolean exeuctiveBoard, Chapter chapter, Member member, LocalDate startDate) {
+    public Role(int rank, String title, boolean exeuctiveBoard, Member member, LocalDate startDate) {
         this.rank = rank;
         this.title = title;
         this.exeuctiveBoard = exeuctiveBoard;
@@ -74,10 +72,5 @@ public class Position {
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }   
-
-    @Override
-    public String toString() {
-        return "Position{" + "rank=" + rank + ", title=" + title + ", exeuctiveBoard=" + exeuctiveBoard + ", member=" + member + ", startDate=" + startDate + '}';
-    }
 
 }

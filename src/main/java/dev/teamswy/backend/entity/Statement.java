@@ -1,4 +1,4 @@
-package dev.teamswy.backend;
+package dev.teamswy.backend.entity;
 
 import java.time.LocalDate;
 import javax.persistence.Entity;
@@ -8,8 +8,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "statements")
 public class Statement {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
@@ -19,9 +21,9 @@ public class Statement {
     private String description;
     private int amount;
     @ManyToOne
-    @JoinTable(name = "Chapter_Statements",
+    @JoinTable(name = "chapterstatements",
            joinColumns = @JoinColumn(name = "chapterId"), 
-            inverseJoinColumns = @JoinColumn(name = "ref_id"))
+            inverseJoinColumns = @JoinColumn(name = "refid"))
     private Chapter chapter;
 
     public Statement() {

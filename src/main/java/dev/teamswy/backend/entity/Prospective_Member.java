@@ -1,12 +1,14 @@
-package dev.teamswy.backend;
+package dev.teamswy.backend.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.JoinColumn;
 
 @Entity
+@Table(name = "prospectivemember")
 public class Prospective_Member {
 
     private String name;
@@ -16,19 +18,20 @@ public class Prospective_Member {
     private String bidStatus;
 
     @ManyToOne
-    @JoinTable(name = "Chapter_Prospects",
-           joinColumns = @JoinColumn(name = "chapterId"), 
-            inverseJoinColumns = @JoinColumn(name = "phone"))
+    @JoinTable(name = "chapterprospects",
+    joinColumns = @JoinColumn(name = "phone"), 
+            inverseJoinColumns = @JoinColumn(name = "idchapter"))
     private Chapter bidchapter;
 
     public Prospective_Member() {
     }
 
-    public Prospective_Member(String name, String email, String phone, String bidStatus) {
+    public Prospective_Member(String name, String email, String phone, String bidStatus, Chapter bidchapter) {
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.bidStatus = bidStatus;
+        this.bidchapter = bidchapter;
     }
 
     public String getName() {
@@ -63,14 +66,12 @@ public class Prospective_Member {
         this.bidStatus = bidStatus;
     }
 
-    @Override
-    public String toString() {
-        return "Prospective_Member{" +
-                "name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", phone='" + phone + '\'' +
-                ", bidStatus='" + bidStatus + '\'' +
-                '}';
+    public Chapter getBidchapter() {
+        return bidchapter;
+    }
+
+    public void setBidchapter(Chapter bidchapter) {
+        this.bidchapter = bidchapter;
     }
 
 }

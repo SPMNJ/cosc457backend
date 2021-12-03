@@ -1,4 +1,4 @@
-package dev.teamswy.backend;
+package dev.teamswy.backend.entity;
 
 import java.time.LocalDate;
 
@@ -12,12 +12,12 @@ public class FraternityHQ {
     private String name;
     private LocalDate date;
     private String address;
-    private String members;
+    private Integer members;
 
     public FraternityHQ() {
     }
 
-    public FraternityHQ(String letters, String name, LocalDate date, String address, String members) {
+    public FraternityHQ(String letters, String name, LocalDate date, String address, Integer members) {
         this.letters = letters;
         this.name = name;
         this.date = date;
@@ -57,12 +57,12 @@ public class FraternityHQ {
         this.address = address;
     }
 
-    public String getMembers() {
+    public Integer getMembers() {
         return members;
     }
 
-    public void setMembers(String members) {
-        this.members = members;
+    public void setMembers(Integer i) {
+        this.members = i;
     }
 
     @Override

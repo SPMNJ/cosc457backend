@@ -1,4 +1,4 @@
-package dev.teamswy.backend;
+package dev.teamswy.backend.entity;
 
 import java.time.LocalDate;
 
@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+
+import dev.teamswy.backend.ChapterMember;
 
 @Entity
 public class Member {
@@ -20,7 +22,6 @@ public class Member {
     private String name;
     private String email;
     private String phone;
-    private String address;
     private String status;
     private LocalDate inductionDate;
     private LocalDate intiationDate;
@@ -28,13 +29,13 @@ public class Member {
     public Member() {
     }
 
-    public Member(Chapter chapter, int rollNo, String name, String email, String phone, String address, String status,
+    public Member(Chapter chapter, int rollNo, String name, String email, String phone, String status,
             LocalDate inductionDate, LocalDate intiationDate) {
         this.chapter = chapter;
+        this.chapterMember = new ChapterMember(chapter.getChapterId(), rollNo);
         this.name = name;
         this.email = email;
         this.phone = phone;
-        this.address = address;
         this.status = status;
         this.inductionDate = inductionDate;
         this.intiationDate = intiationDate;
@@ -80,14 +81,6 @@ public class Member {
         this.phone = phone;
     }
 
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public String getStatus() {
         return status;
     }
@@ -115,7 +108,7 @@ public class Member {
     @Override
     public String toString() {
         return "Member [chapterMember=" + chapterMember + ", chapter=" + chapter + ", name=" + name
-                + ", email=" + email + ", phone=" + phone + ", address=" + address + ", status=" + status
+                + ", email=" + email + ", phone=" + phone + ", status=" + status
                 + ", inductionDate=" + inductionDate + ", intiationDate=" + intiationDate + "]";
     }
 }
