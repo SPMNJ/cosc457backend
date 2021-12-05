@@ -10,7 +10,7 @@ import dev.teamswy.backend.entity.Statement;
 
 public interface IStatementRepository extends CrudRepository<Statement, Integer> {
     
-    @Query(value = "SELECT statements.* FROM chapter_statements INNER JOIN statements ON chapter_statements.refid = statements.ref_id WHERE chapter_statements.chapterId = ?1", nativeQuery = true)
-    List<Statement> findByChapter(Chapter chapter);
+    @Query(value = "FROM Statement s WHERE s.chapter = ?1", nativeQuery = false)
+    Iterable<Statement> findByChapter(Chapter chapter);
     
 }

@@ -6,6 +6,7 @@ public class ChapterDTO {
     private String chapterName;
     private LocalDate charterDate;
     private String chapterStatus;
+    private Integer chapterId;
     
     public ChapterDTO() {
     }
@@ -36,5 +37,13 @@ public class ChapterDTO {
 
     public void setChapterStatus(String chapterStatus) {
         this.chapterStatus = chapterStatus;
+    }
+
+    public Integer getChapterId() {
+        return chapterId;
     }    
+
+    public void setChapterId(Integer chapterId) {
+        this.chapterId = chapterId;
+    }
 }

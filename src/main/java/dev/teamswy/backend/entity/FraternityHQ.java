@@ -12,17 +12,17 @@ public class FraternityHQ {
     private String name;
     private LocalDate date;
     private String address;
-    private Integer members;
+    private Integer chapters;
 
     public FraternityHQ() {
     }
 
-    public FraternityHQ(String letters, String name, LocalDate date, String address, Integer members) {
+    public FraternityHQ(String letters, String name, LocalDate date, String address, Integer chapters) {
         this.letters = letters;
         this.name = name;
         this.date = date;
         this.address = address;
-        this.members = members;
+        this.chapters = chapters;
     }
 
     public String getLetters() {
@@ -57,12 +57,12 @@ public class FraternityHQ {
         this.address = address;
     }
 
-    public Integer getMembers() {
-        return members;
+    public Integer getChapters() {
+        return chapters;
     }
 
-    public void setMembers(Integer i) {
-        this.members = i;
+    public void setChapters(Integer i) {
+        this.chapters = i;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class FraternityHQ {
                 ", name='" + name + '\'' +
                 ", date=" + date +
                 ", address='" + address + '\'' +
-                ", members='" + members + '\'' +
+                ", members='" + chapters + '\'' +
                 '}';
     }
 
