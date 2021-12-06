@@ -3,6 +3,8 @@ package dev.teamswy.backend.entity;
 import java.time.LocalDate;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
@@ -12,9 +14,10 @@ import javax.persistence.OneToOne;
 public class Role {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int rank;
     private String title;
-    private boolean exeuctiveBoard;
+    private boolean eboard;
 
     @OneToOne
     @JoinColumns({
@@ -26,10 +29,10 @@ public class Role {
     public Role() {
     }
 
-    public Role(int rank, String title, boolean exeuctiveBoard, Member member, LocalDate startDate) {
+    public Role(int rank, String title, boolean eboard, Member member, LocalDate startDate) {
         this.rank = rank;
         this.title = title;
-        this.exeuctiveBoard = exeuctiveBoard;
+        this.eboard = eboard;
         this.member = member;
         this.startDate = startDate;
     }
@@ -50,13 +53,14 @@ public class Role {
         this.title = title;
     }
 
-    public boolean isExeuctiveBoard() {
-        return exeuctiveBoard;
+    public boolean isEboard() {
+        return eboard;
     }
 
-    public void setExeuctiveBoard(boolean exeuctiveBoard) {
-        this.exeuctiveBoard = exeuctiveBoard;
-    }   
+    public void setEboard(boolean eboard) {
+        this.eboard = eboard;
+    }
+
     public Member getMember() {
         return member;
     }
@@ -71,6 +75,5 @@ public class Role {
 
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
-    }   
-
+    }
 }

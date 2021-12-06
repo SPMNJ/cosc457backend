@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import dev.teamswy.backend.dto.ChapterDTO;
+import dev.teamswy.backend.dto.MemberDTO;
 import dev.teamswy.backend.dto.ProspectiveDTO;
 import dev.teamswy.backend.dto.RoleDTO;
+import dev.teamswy.backend.dto.StatementDTO;
 import dev.teamswy.backend.entity.Chapter;
 import dev.teamswy.backend.entity.FraternityHQ;
 import dev.teamswy.backend.entity.Member;
@@ -26,6 +28,7 @@ import dev.teamswy.backend.repository.IMemberRepository;
 import dev.teamswy.backend.repository.IProspectRepository;
 import dev.teamswy.backend.repository.IRoleRepository;
 import dev.teamswy.backend.repository.IStatementRepository;
+import net.bytebuddy.asm.Advice.Local;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -112,9 +115,9 @@ public class MainControlller {
                         memberRepository.save(member);
                     }
                 }
-                chapterRepository.save(updatedChapter);
-                return new ResponseEntity<>(chapterToUpdate.get(), HttpStatus.OK);
             }
+            chapterRepository.save(updatedChapter);
+            return new ResponseEntity<>(chapterToUpdate.get(), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -139,6 +142,47 @@ public class MainControlller {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @GetMapping("/chapter/{chapterId}/members/{rollNo}")
+    public ResponseEntity<Member> getChapterMember(@PathVariable(value = "chapterId") int chapterId,
+            @PathVariable(value = "rollNo") int rollNo) {
+        Optional<Chapter> chapter = chapterRepository.findById(chapterId);
+        if (chapter.isPresent()) {
+            Optional<Member> member = memberRepository
+                    .findById(new ChapterMember(chapter.get().getChapterId(), rollNo));
+            if (member.isPresent()) {
+                return new ResponseEntity<>(member.get(), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/chapter/{chapterId}/members/update")
+    public ResponseEntity<Member> updateChapterMember(@PathVariable(value = "chapterId") int chapterId,
+            @RequestBody MemberDTO member) {
+        Optional<Chapter> chapter = chapterRepository.findById(chapterId);
+        if (chapter.isPresent()) {
+            Optional<Member> memberToUpdate = memberRepository
+                    .findById(new ChapterMember(chapter.get().getChapterId(), member.getRollNo()));
+            if (memberToUpdate.isPresent()) {
+                Member updatedMember = memberToUpdate.get();
+                updatedMember.setName(member.getName());
+                updatedMember.setEmail(member.getEmail());
+                updatedMember.setPhone(member.getPhone());
+                updatedMember.setStatus(member.getStatus());
+                updatedMember.setInductionDate(member.getInductionDate());
+                updatedMember.setInitiationDate(member.getInitationDate());
+                if (updatedMember.getStatus().equals("Active") && updatedMember.getInitiationDate() == null) {
+                    updatedMember.setInitiationDate(LocalDate.now());
+                }
+                memberRepository.save(updatedMember);
+                return new ResponseEntity<>(updatedMember, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     @GetMapping(value = "/chapter/{chapterId}/prospects")
     public ResponseEntity<Iterable<Prospective_Member>> getChapterProspects(
             @PathVariable(value = "chapterId") int chapterId) {
@@ -150,10 +194,11 @@ public class MainControlller {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
     @GetMapping(value = "/chapter/{chapterId}/prospects/{prospectId}")
     public ResponseEntity<Prospective_Member> getChapterProspectById(
             @PathVariable(value = "chapterId") int chapterId,
-            @PathVariable(value = "prospectId") int prospectId) {
+            @PathVariable(value = "prospectId") String prospectId) {
         Optional<Chapter> chapter = chapterRepository.findById(chapterId);
         if (chapter.isPresent()) {
             Optional<Prospective_Member> prospect = prospectRepository.findById(prospectId);
@@ -194,19 +239,24 @@ public class MainControlller {
         if (chapter.isPresent()) {
             Optional<Prospective_Member> prospectMember = prospectRepository.findById(prospect.getPhone());
             if (prospectMember.isPresent()) {
-                prospectMember.get().setName(prospect.getName());
-                prospectMember.get().setEmail(prospect.getEmail());
-                prospectMember.get().setPhone(prospect.getPhone());
-                prospectRepository.save(prospectMember.get());
-                return new ResponseEntity<>(prospectMember.get(), HttpStatus.OK);
+                Prospective_Member updatedProspect = prospectMember.get();
+                updatedProspect.setName(prospect.getName());
+                updatedProspect.setEmail(prospect.getEmail());
+                updatedProspect.setPhone(prospect.getPhone());
+                updatedProspect.setBidStatus(prospect.getBidStatus());
+                if (prospect.getBidStatus().equals("Remove")) {
+                    prospectRepository.delete(updatedProspect);
+                } else {
+                    prospectRepository.save(updatedProspect);
+                }
+                return new ResponseEntity<>(updatedProspect, HttpStatus.OK);
             }
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    
 
     @PostMapping(value = "/chapter/{chapterId}/extendbid")
-    public ResponseEntity<String> extendBid(@PathVariable(value = "chapterId") int chapterId,
+    public ResponseEntity<Member> extendBid(@PathVariable(value = "chapterId") int chapterId,
             @RequestBody ProspectiveDTO extendBid) {
         Optional<Chapter> chapter = chapterRepository.findById(chapterId);
         Optional<Prospective_Member> prospect = prospectRepository.findById(extendBid.getPhone());
@@ -215,18 +265,18 @@ public class MainControlller {
             prospectRepository.delete(prospectMember);
             Member member = new Member();
             Chapter currentChapter = chapter.get();
-            long count = memberRepository.count();
             member.setName(prospectMember.getName());
             member.setEmail(prospectMember.getEmail());
             member.setPhone(prospectMember.getPhone());
             member.setChapter(currentChapter);
             member.setStatus("New Member");
             member.setInductionDate(LocalDate.now());
-            member.setChapterMember(new ChapterMember(currentChapter.getChapterId(), (int) (count + 1)));
+            member.setChapterMember(
+                    new ChapterMember(currentChapter.getChapterId(), currentChapter.getChapterMembers() + 1));
             currentChapter.setChapterMembers(currentChapter.getChapterMembers() + 1);
             memberRepository.save(member);
             chapterRepository.save(currentChapter);
-            return new ResponseEntity<>("Bid Extended! Welcome to the fraternity.", HttpStatus.OK);
+            return new ResponseEntity<>(member, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
@@ -241,25 +291,77 @@ public class MainControlller {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @GetMapping(value = "/chapter/{chapterId}/roles/{roleId}")
+    public ResponseEntity<Role> getChapterRoleById(@PathVariable(value = "chapterId") int chapterId,
+            @PathVariable(value = "roleId") int roleId) {
+        Optional<Chapter> chapter = chapterRepository.findById(chapterId);
+        if (chapter.isPresent()) {
+            Optional<Role> role = roleRepository.findById(roleId);
+            if (role.isPresent()) {
+                return new ResponseEntity<>(role.get(), HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     @PostMapping(value = "/chapter/{chapterId}/roles/add")
     public ResponseEntity<Role> addRole(@PathVariable(value = "chapterId") int chapterId, @RequestBody RoleDTO role) {
         Optional<Chapter> chapter = chapterRepository.findById(chapterId);
         if (chapter.isPresent()) {
-            Optional<Role> roleExists = roleRepository.findById(role.getRankID());
-            if (roleExists.isPresent()) {
-                roleRepository.delete(roleExists.get());
-            }
             Optional<Member> member = memberRepository
-                    .findById(new ChapterMember(chapter.get().getChapterId(), role.getRankID()));
+                    .findById(new ChapterMember(chapter.get().getChapterId(), role.getRollNo()));
             if (member.isPresent()) {
                 Role newRole = new Role();
                 newRole.setMember(member.get());
                 newRole.setTitle(role.getTitle());
-                newRole.setRank(role.getRankID());
-                newRole.setExeuctiveBoard(role.isExeuctiveBoard());
-                newRole.setStartDate(LocalDate.now());
+                newRole.setEboard(role.isEboard());
+                if (role.getStartDate() == null) {
+                    newRole.setStartDate(LocalDate.now());
+                } else {
+                    newRole.setStartDate(role.getStartDate());
+                }
                 roleRepository.save(newRole);
                 return new ResponseEntity<>(newRole, HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping(value = "/chapter/{chapterId}/roles/update")
+    public ResponseEntity<Role> updateRole(@PathVariable(value = "chapterId") int chapterId,
+            @RequestBody RoleDTO role) {
+        Optional<Chapter> chapter = chapterRepository.findById(chapterId);
+        if (chapter.isPresent()) {
+            Optional<Role> roleExists = roleRepository.findById(role.getRankId());
+            if (roleExists.isPresent()) {
+                Role updatedRole = roleExists.get();
+                if (role.getRollNo() != 0) {
+                    Optional<Member> member = memberRepository
+                            .findById(new ChapterMember(chapter.get().getChapterId(), role.getRollNo()));
+                    if (member.isPresent()) {
+                        updatedRole.setMember(member.get());
+                    }
+                }
+                updatedRole.setTitle(role.getTitle());
+                updatedRole.setEboard(role.isEboard());
+                updatedRole.setStartDate(role.getStartDate());
+                roleRepository.save(updatedRole);
+                return new ResponseEntity<>(updatedRole, HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping(value = "/chapter/{chapterId}/roles/delete")
+    public ResponseEntity<Role> deleteRole(@PathVariable(value = "chapterId") int chapterId,
+            @RequestBody RoleDTO role) {
+        Optional<Chapter> chapter = chapterRepository.findById(chapterId);
+        if (chapter.isPresent()) {
+            Optional<Role> roleExists = roleRepository.findById(role.getRankId());
+            if (roleExists.isPresent()) {
+                Role deletedRole = roleExists.get();
+                roleRepository.delete(deletedRole);
+                return new ResponseEntity<>(deletedRole, HttpStatus.OK);
             }
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -272,6 +374,27 @@ public class MainControlller {
             Iterable<Statement> statements = statementRepository.findByChapter(chapter.get());
             return new ResponseEntity<>(statements, HttpStatus.OK);
 
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping(value = "/chapter/{chapterId}/statements/add")
+    public ResponseEntity<Statement> addStatement(@PathVariable(value = "chapterId") int chapterId,
+            @RequestBody StatementDTO statement) {
+        Optional<Chapter> chapter = chapterRepository.findById(chapterId);
+        if (chapter.isPresent()) {
+            Statement newStatement = new Statement();
+            newStatement.setChapter(chapter.get());
+            newStatement.setAmount(statement.getAmount());
+            if (statement.getDate() == null) {
+                newStatement.setDate(LocalDate.now());
+            } else {
+                newStatement.setDate(statement.getDate());
+            }
+            newStatement.setDescription(statement.getDesc());
+            newStatement.setStatementType(statement.getType());
+            statementRepository.save(newStatement);
+            return new ResponseEntity<>(newStatement, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

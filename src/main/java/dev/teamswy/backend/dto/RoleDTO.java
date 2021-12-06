@@ -1,36 +1,40 @@
 package dev.teamswy.backend.dto;
 
+import java.time.LocalDate;
+
 public class RoleDTO {
 
-    private long rollNo;
-    private int rankID;
+    private int rollNo;
+    private int rankId;
     private String title;
-    private boolean exeuctiveBoard;
+    private LocalDate startDate;
+    private boolean eboard;
 
     public RoleDTO() {
     }
 
-    public RoleDTO(long rollNo, int rankID, String title, boolean exeuctiveBoard) {
+    public RoleDTO(int rollNo, int rankId, String title, LocalDate startDate, boolean eboard) {
         this.rollNo = rollNo;
-        this.rankID = rankID;
+        this.rankId = rankId;
         this.title = title;
-        this.exeuctiveBoard = exeuctiveBoard;
+        this.startDate = startDate;
+        this.eboard = eboard;
     }
 
-    public long getRollNo() {
+    public int getRollNo() {
         return rollNo;
     }
 
-    public void setRollNo(long rollNo) {
+    public void setRollNo(int rollNo) {
         this.rollNo = rollNo;
     }
 
-    public int getRankID() {
-        return rankID;
+    public int getRankId() {
+        return rankId;
     }
 
-    public void setRankID(int rankID) {
-        this.rankID = rankID;
+    public void setRankId(int rankId) {
+        this.rankId = rankId;
     }
 
     public String getTitle() {
@@ -41,13 +45,19 @@ public class RoleDTO {
         this.title = title;
     }
 
-    public boolean isExeuctiveBoard() {
-        return exeuctiveBoard;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public void setExeuctiveBoard(boolean exeuctiveBoard) {
-        this.exeuctiveBoard = exeuctiveBoard;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
-    
 
+    public boolean isEboard() {
+        return eboard;
+    }
+
+    public void setEboard(boolean eboard) {
+        this.eboard = eboard;
+    }
 }

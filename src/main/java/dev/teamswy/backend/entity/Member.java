@@ -24,13 +24,13 @@ public class Member {
     private String phone;
     private String status;
     private LocalDate inductionDate;
-    private LocalDate intiationDate;
+    private LocalDate initiationDate;
 
     public Member() {
     }
 
     public Member(Chapter chapter, int rollNo, String name, String email, String phone, String status,
-            LocalDate inductionDate, LocalDate intiationDate) {
+            LocalDate inductionDate, LocalDate initiationDate) {
         this.chapter = chapter;
         this.chapterMember = new ChapterMember(chapter.getChapterId(), rollNo);
         this.name = name;
@@ -38,7 +38,7 @@ public class Member {
         this.phone = phone;
         this.status = status;
         this.inductionDate = inductionDate;
-        this.intiationDate = intiationDate;
+        this.initiationDate = initiationDate;
     }
 
     public ChapterMember getChapterMember() {
@@ -97,18 +97,18 @@ public class Member {
         this.inductionDate = inductionDate;
     }
 
-    public LocalDate getIntiationDate() {
-        return intiationDate;
+    public LocalDate getInitiationDate() {
+        return initiationDate;
     }
 
-    public void setIntiationDate(LocalDate intiationDate) {
-        this.intiationDate = intiationDate;
+    public void setInitiationDate(LocalDate initiationDate) {
+        this.initiationDate = initiationDate;
     }
 
     @Override
     public String toString() {
         return "Member [chapterMember=" + chapterMember + ", chapter=" + chapter + ", name=" + name
                 + ", email=" + email + ", phone=" + phone + ", status=" + status
-                + ", inductionDate=" + inductionDate + ", intiationDate=" + intiationDate + "]";
+                + ", inductionDate=" + inductionDate + ", intiationDate=" + initiationDate + "]";
     }
 }
